@@ -207,6 +207,9 @@ SECUREBOOT = "true"
 EFI_PROVIDER = "grub-efi"
 SHIM_LOADER_IMAGE = "grubx64.efi"
 
+# efi boot manager
+IMAGE_INSTALL_append = " efibootmgr"
+
 # enable signed kernel image for secure boot
 # uncomment to bundle Intel CPU microcode update with kernel
 #KERNEL_CLASSES_append = " kernel-microcode"
@@ -214,7 +217,7 @@ SHIM_LOADER_IMAGE = "grubx64.efi"
 #KERNEL_CLASSES_append = " kernel-i915-fw"
 # enable slimboot
 # bundle initrd for secure boot
-KERNEL_CLASSES_append = " kernel-sign kernel-sblimage kernel-initrd"
+KERNEL_CLASSES_append = " kernel-sign kernel-sblimage kernel-sblimage-sha256 kernel-sblimage-sha384 kernel-initrd"
 
 # default kernel (virtual provider set in multiconfig with internal overrides)
 IMAGE_INSTALL_append = " kernel-image-signed kernel-modules"
@@ -245,7 +248,7 @@ APPEND_append = " console=ttyS4,115200n8 console=ttyS5,115200n8 i915.force_probe
 IMAGE_INSTALL_append = " os-release"
 
 # IASImage settings for Slimboot
-IMAGE_INSTALL_append = " kernel-image-sblimage"
+IMAGE_INSTALL_append = " kernel-image-sblimage kernel-image-sblimage-sha256 kernel-image-sblimage-sha384"
 
 ## Enable Smack support ##
 #OVERRIDES .= ":smack"
@@ -266,6 +269,9 @@ VIRTUAL-RUNTIME_initscripts = ""
 KERNEL_PROVIDERS_EXTRA_MODULES_append = " isgx"
 IMAGE_INSTALL_append = " sgx isgx-blacklist"
 RECOMMENDS_sgx_remove = "kernel-modules-isgx"
+
+# DPDK
+KERNEL_PROVIDERS_EXTRA_MODULES_append = " dpdk-modules"
 
 ###################
 # OpenVINO PACKAGES
@@ -297,13 +303,6 @@ IMAGE_INSTALL_append = " dldt-model-optimizer"
 
 # python3 packages needed by the inference engine python test script to transform the input image to expected format
 IMAGE_INSTALL_append = " python3-opencv python3-numpy"
-
-###################
-# OpenVINO PACKAGES
-###################
-
-# This file is for internal use, but should not affect external builds
-include ${TOPDIR}/conf/internal/internal.inc
 
 ########## clang/llvm size problems
 BAD_RECOMMENDATIONS_append = " clang-staticdev"
