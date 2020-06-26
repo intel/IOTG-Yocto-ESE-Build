@@ -234,9 +234,6 @@ RDEPENDS_grub-efi_remove_class-target = "virtual/grub-bootconf"
 # autoload modules
 KERNEL_MODULE_AUTOLOAD_append = " configfs uhid"
 
-# use consolekit2
-PREFERRED_RPROVIDER_consolekit = "consolekit2"
-
 # subregion capsule generation tool
 IMAGE_INSTALL_append = " fbu"
 
@@ -269,9 +266,6 @@ VIRTUAL-RUNTIME_initscripts = ""
 KERNEL_PROVIDERS_EXTRA_MODULES_append = " isgx"
 IMAGE_INSTALL_append = " sgx isgx-blacklist"
 RECOMMENDS_sgx_remove = "kernel-modules-isgx"
-
-# DPDK
-KERNEL_PROVIDERS_EXTRA_MODULES_append = " dpdk-modules"
 
 ###################
 # OpenVINO PACKAGES
