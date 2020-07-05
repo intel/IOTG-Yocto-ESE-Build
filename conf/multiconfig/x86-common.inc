@@ -58,6 +58,7 @@ DISTRO_FEATURES_append = " msdk"
 IMAGE_INSTALL_append = " intel-media-driver"
 IMAGE_INSTALL_append = "${@bb.utils.contains("DISTRO_FEATURES","msdk", " intel-mediasdk", "", d)}"
 PACKAGECONFIG_append_pn-gstreamer1.0-libav = " libav"
+PACKAGECONFIG_append_pn-gstreamer1.0-plugins-base = "${@bb.utils.filter('DISTRO_FEATURES', 'opengl', d)}"
 IMAGE_INSTALL_append = " vulkan-loader"
 
 # mesa iris driver
