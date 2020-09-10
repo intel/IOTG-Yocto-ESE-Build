@@ -242,10 +242,6 @@ IMAGE_INSTALL_append = " fbu"
 SERIAL_CONSOLES_append = " 115200;ttyS4 115200;ttyS5"
 APPEND_append = " console=ttyS4,115200n8 console=ttyS5,115200n8 i915.force_probe=* i915.enable_guc=2" 
 
-# WA for EHL S0ix issue
-# HSD: https://hsdes.intel.com/appstore/article/#/1508254421
-APPEND_append = " ufshcd-core.max_lines=1"
-
 # OS-release info
 IMAGE_INSTALL_append = " os-release"
 
