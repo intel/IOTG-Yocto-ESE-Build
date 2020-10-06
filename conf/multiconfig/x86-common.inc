@@ -50,10 +50,10 @@ PREFERRED_VERSION_gstreamer1.0-plugins-bad = "${PREFERRED_VERSION_gstreamer1.0}"
 PREFERRED_VERSION_gstreamer1.0-plugins-good = "${PREFERRED_VERSION_gstreamer1.0}"
 PREFERRED_VERSION_gstreamer1.0-vaapi = "${PREFERRED_VERSION_gstreamer1.0}"
 IMAGE_INSTALL_append = " gstreamer1.0-libav"
-PREFERRED_VERSION_intel-media-driver = "20.1%"
+PREFERRED_VERSION_intel-media-driver = "20.3%"
 PREFERRED_VERSION_gmmlib = "20%"
 PREFERRED_VERSION_gmmlib-native = "${PREFERRED_VERSION_gmmlib}"
-PREFERRED_VERSION_intel-mediasdk = "20.2%"
+PREFERRED_VERSION_intel-mediasdk = "20.3%"
 DISTRO_FEATURES_append = " msdk"
 IMAGE_INSTALL_append = " intel-media-driver"
 IMAGE_INSTALL_append = "${@bb.utils.contains("DISTRO_FEATURES","msdk", " intel-mediasdk", "", d)}"
@@ -89,7 +89,8 @@ HOSTTOOLS += "git-lfs"
 IMAGE_INSTALL_append = " ocl-icd intel-compute-runtime"
 
 # Enable ptp daemons
-IMAGE_INSTALL_append = " gptp linuxptp net-snmp"
+# temporary disable gptp IMAGE_INSTALL_append = " gptp linuxptp net-snmp"
+IMAGE_INSTALL_append = " linuxptp net-snmp"
 
 # Enable cups
 IMAGE_INSTALL_append = " cups"
@@ -159,6 +160,9 @@ PREFERRED_VERSION_iproute2 = "git%"
 
 # Install TSN tool
 IMAGE_INSTALL_append = " ethtool iproute2 iproute2-tc iperf3 tcpdump linuxptp stress-ng"
+
+# Enable live555
+IMAGE_INSTALL_append = " live555-examples"
 
 # Qemu virtualization support
 DISTRO_FEATURES_append = " virtualization"
@@ -274,27 +278,27 @@ RECOMMENDS_sgx_remove = "kernel-modules-isgx"
 
 # Enable clDNN only when needed, as this will pull in additional compile-time
 # and runtime dependencies for Intel Graphics Compute Runtime for OpenCL
-PACKAGECONFIG_append_pn-dldt-inference-engine = " opencl"
+PACKAGECONFIG_append_pn-openvino-inference-engine = " opencl"
 
 # Enable building inference engine python API.
-PACKAGECONFIG_append_pn-dldt-inference-engine = " python3"
+PACKAGECONFIG_append_pn-openvino-inference-engine = " python3"
 
 # This adds inference engine related libraries to the target image
-IMAGE_INSTALL_append = " dldt-inference-engine"
+IMAGE_INSTALL_append = " openvino-inference-engine"
 
 # This adds inference engine samples to the target image
-IMAGE_INSTALL_append = " dldt-inference-engine-samples"
+IMAGE_INSTALL_append = " openvino-inference-engine-samples"
 
 # Include inference engine python API package to the target image.
 # This is required for running e2e_oss test cases
-IMAGE_INSTALL_append = " dldt-inference-engine-python3"
+IMAGE_INSTALL_append = " openvino-inference-engine-python3"
 
 # Enable MYRIAD plugin
-IMAGE_INSTALL_append = " dldt-inference-engine-vpu-firmware"
+IMAGE_INSTALL_append = " openvino-inference-engine-vpu-firmware"
 
 # Include model optimizer to the target image.
 # This is required for running e2e_oss test cases
-IMAGE_INSTALL_append = " dldt-model-optimizer"
+IMAGE_INSTALL_append = " openvino-model-optimizer"
 
 # python3 packages needed by the inference engine python test script to transform the input image to expected format
 IMAGE_INSTALL_append = " python3-opencv python3-numpy"
