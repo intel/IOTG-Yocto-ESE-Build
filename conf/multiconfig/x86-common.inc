@@ -57,6 +57,7 @@ PREFERRED_VERSION_intel-mediasdk = "20.3%"
 DISTRO_FEATURES_append = " msdk"
 IMAGE_INSTALL_append = " intel-media-driver"
 IMAGE_INSTALL_append = "${@bb.utils.contains("DISTRO_FEATURES","msdk", " intel-mediasdk", "", d)}"
+IMAGE_INSTALL_append = " intel-mediasdk-samples"
 PACKAGECONFIG_append_pn-gstreamer1.0-libav = " libav"
 PACKAGECONFIG_append_pn-gstreamer1.0-plugins-base = "${@bb.utils.filter('DISTRO_FEATURES', 'opengl', d)}"
 IMAGE_INSTALL_append = " vulkan-loader"
@@ -70,7 +71,7 @@ PACKAGECONFIG_append_pn-mesa-native_class-native = " gles"
 # make sure some PACKAGECONFIG is at least common in meta-clang clang/llvm
 PACKAGECONFIG_append_pn-clang = " rtti eh  shared-libs"
 PACKAGECONFIG_append_pn-clang-native = " rtti eh shared-libs"
-LLVMVERSION = "9.0.0"
+LLVMVERSION = "10.0.0"
 PREFERRED_VERSION_llvm = "${LLVMVERSION}"
 PREFERRED_VERSION_llvm-native = "${LLVMVERSION}"
 PREFERRED_VERSION_nativesdk-llvm = "${LLVMVERSION}"
@@ -155,9 +156,6 @@ IMAGE_INSTALL_append = " xinput"
 #INHERIT += "extrausers"
 #EXTRA_USERS_PARAMS = "${@bb.utils.contains("IMAGE_FEATURES","allow-empty-password", "", "usermod -P 1876*18 root;", d)}"
 
-# prefer bleeding edge iproute2
-PREFERRED_VERSION_iproute2 = "git%"
-
 # Install TSN tool
 IMAGE_INSTALL_append = " ethtool iproute2 iproute2-tc iperf3 tcpdump linuxptp stress-ng"
 
@@ -167,6 +165,11 @@ IMAGE_INSTALL_append = " live555-examples"
 # Qemu virtualization support
 DISTRO_FEATURES_append = " virtualization"
 IMAGE_INSTALL_append = " qemu ovmf-edk2"
+
+# DPDK stack for TCCSDK 
+IMAGE_INSTALL_append = " ${PREFERRED_PROVIDER_virtual/kernel}-dpdk"
+KERNEL_PROVIDERS_EXTRA_MODULES_append = " dpdk-modules"
+
 
 # Using icewm instead of matchbox
 IMAGE_INSTALL_append = " icewm"
@@ -243,7 +246,6 @@ KERNEL_MODULE_AUTOLOAD_append = " configfs uhid"
 IMAGE_INSTALL_append = " fbu"
 
 # Additional serial consoles
-SERIAL_CONSOLES_append = " 115200;ttyS4 115200;ttyS5"
 APPEND_append = " console=ttyS4,115200n8 console=ttyS5,115200n8 i915.force_probe=* i915.enable_guc=2" 
 
 # OS-release info
