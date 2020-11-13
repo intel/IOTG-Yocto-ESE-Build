@@ -125,7 +125,7 @@ IMAGE_INSTALL_append = " linux-firmware"
 
 # Add wifi/bluetooth components, uncomment the following line to use out of tree iwlwifi and disable the kernel wifi drivers
 DISTRO_FEATURES_append = " backport-iwlwifi"
-KERNEL_PROVIDERS_EXTRA_MODULES_append = "${@bb.utils.contains("DISTRO_FEATURES","backport-iwlwifi", " backport-iwlwifi", "", d)}"
+KERNEL_PROVIDERS_EXTRA_MODULES[5.4] += "${@bb.utils.contains("DISTRO_FEATURES","backport-iwlwifi", "backport-iwlwifi", "", d)}"
 
 # Bluetooth management
 IMAGE_INSTALL_append = " bluez5-noinst-tools bluez5-testtools"
@@ -162,10 +162,17 @@ IMAGE_INSTALL_append = " live555-examples"
 DISTRO_FEATURES_append = " virtualization"
 IMAGE_INSTALL_append = " qemu ovmf-edk2"
 
-# DPDK stack for TCCSDK 
+# DPDK (i210) stack for TCCSDK
+# BBCLASSEXTEND method of extending the out-of-tree modules manually is rather clumsy but
+# this is a special case because the same recipe also installs userspace binaries and
+# kernel modules, making the non-module files duplicated and clashing upon image do_rootfs.
+# We use a bbappend file to split the packages and prevent duplication.
+#
+# It is preferable to use KERNEL_PROVIDERS[tag] and KERNEL_PROVIDERS_EXTRA_MODULES[tag]
+# see packagegroup-kernel-oot.bb in ese-bsp for more details.
+BBCLASSEXTEND_append_pn-dpdk = " kernel-oot-module:${PREFERRED_PROVIDER_virtual/kernel}"
 IMAGE_INSTALL_append = " ${PREFERRED_PROVIDER_virtual/kernel}-dpdk"
-KERNEL_PROVIDERS_EXTRA_MODULES_append = " dpdk-modules"
-
+KERNEL_PROVIDERS_EXTRA_MODULES[5.4] += "dpdk-modules"
 
 # Using icewm instead of matchbox
 IMAGE_INSTALL_append = " icewm"
@@ -209,6 +216,7 @@ SECUREBOOT = "true"
 
 # Grub-efi provider
 EFI_PROVIDER = "grub-efi"
+# Shim will load this file
 SHIM_LOADER_IMAGE = "grubx64.efi"
 
 # efi boot manager
@@ -220,20 +228,15 @@ IMAGE_INSTALL_append = " efibootmgr"
 # uncomment to bundle Intel i915 firmware into the kernel
 #KERNEL_CLASSES_append = " kernel-i915-fw"
 # enable slimboot
-# bundle initrd for secure boot
-KERNEL_CLASSES_append = " kernel-sign kernel-sblimage kernel-sblimage-sha256 kernel-sblimage-sha384 kernel-initrd"
+# bundle initrd for secure boot (kernel signing is now handled by ese-image-features post-processing)
+KERNEL_CLASSES_append = " kernel-sblimage-sha256 kernel-sblimage-sha384 kernel-initrd"
 
 # default kernel (virtual provider set in multiconfig with internal overrides)
-IMAGE_INSTALL_append = " kernel-image-signed kernel-modules"
+IMAGE_INSTALL_append = " kernel-image kernel-modules"
 
 # convenience packge to pull in any other out-of-tree kernel drivers
 # See KERNEL_PROVIDERS_EXTRA_MODULES variable
 IMAGE_INSTALL_append = " packagegroup-kernel-oot"
-
-# Not actually needed, handled elsewhere through wic plugins
-MACHINE_ESSENTIAL_EXTRA_RDEPENDS_remove = "kernel-image"
-BAD_RECOMMENDATIONS_append = " grub-efi-bootimg virtual/grub-bootconf"
-RDEPENDS_grub-efi_remove_class-target = "virtual/grub-bootconf"
 
 # autoload modules
 KERNEL_MODULE_AUTOLOAD_append = " configfs uhid"
@@ -248,7 +251,7 @@ APPEND_append = " console=ttyS4,115200n8 console=ttyS5,115200n8 i915.force_probe
 IMAGE_INSTALL_append = " os-release"
 
 # IASImage settings for Slimboot
-IMAGE_INSTALL_append = " kernel-image-sblimage kernel-image-sblimage-sha256 kernel-image-sblimage-sha384"
+IMAGE_INSTALL_append = " kernel-image-sblimage-sha256 kernel-image-sblimage-sha384"
 
 ## Enable Smack support ##
 #OVERRIDES .= ":smack"
@@ -266,7 +269,7 @@ VIRTUAL-RUNTIME_initscripts = ""
 ## End of Smack support ##
 
 # SGX
-KERNEL_PROVIDERS_EXTRA_MODULES_append = " isgx"
+KERNEL_PROVIDERS_EXTRA_MODULES[5.4] += "isgx"
 IMAGE_INSTALL_append = " sgx isgx-blacklist"
 RECOMMENDS_sgx_remove = "kernel-modules-isgx"
 

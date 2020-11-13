@@ -25,3 +25,10 @@ PREGENERATED_SIGNING_KEY_SHIM_CRT = "shim.crt"
 # There are multiple keys for slimboot
 PREGENERATED_SIGNING_KEY_SLIMBOOT_KEY_SHA256 = "${TOPDIR}/cert/TestSigningPrivateKey.pem"
 PREGENERATED_SIGNING_KEY_SLIMBOOT_KEY_SHA384 = "${TOPDIR}/cert/TestSigningPrivateKey_RSA3072.pem"
+
+# where to symlink "sbl_os" to by default, may be sbl_os_3k
+#DEFAULT_secure-boot-certificates-slimboot = "sbl_os_2k"
+# sbl_os_2k keys
+#PREFERRED_PROVIDER_virtual/secure-boot-certificates-slimboot-2048 = "secure-boot-certificates-slimboot-2048"
+# sbl_os_3k keys
+#PREFERRED_PROVIDER_virtual/secure-boot-certificates-slimboot-3072 = "secure-boot-certificates-slimboot-3072"
