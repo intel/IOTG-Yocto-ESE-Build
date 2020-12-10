@@ -162,18 +162,6 @@ IMAGE_INSTALL_append = " live555-examples"
 DISTRO_FEATURES_append = " virtualization"
 IMAGE_INSTALL_append = " qemu ovmf-edk2"
 
-# DPDK (i210) stack for TCCSDK
-# BBCLASSEXTEND method of extending the out-of-tree modules manually is rather clumsy but
-# this is a special case because the same recipe also installs userspace binaries and
-# kernel modules, making the non-module files duplicated and clashing upon image do_rootfs.
-# We use a bbappend file to split the packages and prevent duplication.
-#
-# It is preferable to use KERNEL_PROVIDERS[tag] and KERNEL_PROVIDERS_EXTRA_MODULES[tag]
-# see packagegroup-kernel-oot.bb in ese-bsp for more details.
-BBCLASSEXTEND_append_pn-dpdk = " kernel-oot-module:${PREFERRED_PROVIDER_virtual/kernel}"
-IMAGE_INSTALL_append = " ${PREFERRED_PROVIDER_virtual/kernel}-dpdk"
-KERNEL_PROVIDERS_EXTRA_MODULES[5.4] += "dpdk-modules"
-
 # Using icewm instead of matchbox
 IMAGE_INSTALL_append = " icewm"
 RDEPENDS_packagegroup-core-x11-base_remove_pn-packagegroup-core-x11-base = "matchbox-terminal matchbox-wm mini-x-session"

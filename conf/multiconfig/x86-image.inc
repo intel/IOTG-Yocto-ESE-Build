@@ -9,7 +9,6 @@ SSTATE_DIR = "${TOPDIR}/sstate-cache-${BB_CURRENT_MC}"
 TMPDIR="${TOPDIR}/tmp-${BB_CURRENT_MC}"
 
 include ${SELECTABLE_KERNEL_DEFAULT}
-KERNEL_PROVIDERS[5.4] += "${PREFERRED_PROVIDER_virtual/kernel}"
 
 # To add support for signed image installation to non-removable media,
 # user needs the parted tool and custom scripts
@@ -78,14 +77,16 @@ IMAGE_INSTALL_append = " grub-mender-grubenv mender-grubconf"
 # compatibility symlinks independent of kernel version strings for grub configuration
 KERNEL_CLASSES_append = " kernel-image-symlinks"
 
+# compressed kernel modules to save space
+## NOTICE: kmod must be built to support the compression scheme used or else module loading will fail
+## NOTICE: Dunfell kmod recipe lacks the PACKAGECONFIG[xz] support, even though kmod itself can support xz
+## NOTICE: ese-main kmod has backported support for xz
+DISTRO_FEATURES_append = " kernel-compress-modules"
+
 # grubconf settings (does not handle kernel image dependecies)
 # MENDER_GRUBCONF_KERNELS_MENU[kernel recipe name] = "menu entry names..."
 # MENDER_GRUBCONF_KERNELS[menu entry name] = "command line additions...."
-RT_KERNEL_COMMON_ARGS = "processor.max_cstate=0 intel.max_cstate=0 processor_idle.max_cstate=0 intel_idle.max_cstate=0 clocksource=tsc tsc=reliable nowatchdog intel_pstate=disable idle=poll noht isolcpus=2,3 rcu_nocbs=all rcupdate.rcu_cpu_stall_suppress=1 rcu_nocb_poll irqaffinity=0 i915.enable_rc6=0 i915.enable_dc=0 i915.disable_power_well=0 hugepages=1024 mce=off hpet=disable numa_balancing=disable igb.blacklist=no efi=runtime iommu=pt"
-MENDER_GRUBCONF_KERNELS_MENU[linux-intel-ese-lts-rt-5.4] = "linux-intel-ese-lts-rt-5.4"
-#MENDER_GRUBCONF_KERNELS[linux-intel-ese-lts-rt-5.4+hugepage] = "${RT_KERNEL_COMMON_ARGS} hugepages=1024"
-MENDER_GRUBCONF_KERNELS[linux-intel-ese-lts-rt-5.4] = "${RT_KERNEL_COMMON_ARGS}"
-##### end installer complex
+RT_KERNEL_COMMON_ARGS = "processor.max_cstate=0 intel.max_cstate=0 processor_idle.max_cstate=0 intel_idle.max_cstate=0 clocksource=tsc tsc=reliable nowatchdog intel_pstate=disable idle=poll noht isolcpus=2,3 rcu_nocbs=all rcupdate.rcu_cpu_stall_suppress=1 rcu_nocb_poll irqaffinity=0 i915.enable_rc6=0 i915.enable_dc=0 i915.disable_power_well=0 mce=off hpet=disable numa_balancing=disable igb.blacklist=no efi=runtime art=virtallow"
 
 # internal testing stub
 include ${TOPDIR}/conf/internal/sdk.conf
