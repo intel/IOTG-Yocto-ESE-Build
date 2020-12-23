@@ -44,7 +44,7 @@ DISTRO_FEATURES_NATIVE_append = " x11"
 DISTRO_FEATURES_NATIVESDK_append = " x11"
 
 # Set preferred version for media
-PREFERRED_VERSION_gstreamer1.0 = "1.17%"
+PREFERRED_VERSION_gstreamer1.0 = "1.19%"
 PREFERRED_VERSION_gstreamer1.0-plugins-base = "${PREFERRED_VERSION_gstreamer1.0}"
 PREFERRED_VERSION_gstreamer1.0-plugins-bad = "${PREFERRED_VERSION_gstreamer1.0}"
 PREFERRED_VERSION_gstreamer1.0-plugins-good = "${PREFERRED_VERSION_gstreamer1.0}"
@@ -112,6 +112,7 @@ IMAGE_INSTALL_append = " packagegroup-core-x11-extended"
 
 # Weston/Wayland
 IMAGE_INSTALL_append = " wayland weston"
+PACKAGECONFIG_append_pn-weston = " headless"
 
 # Contents from meta-tpm2 and configuration
 IMAGE_INSTALL_append = " packagegroup-ese-tpm2"
@@ -124,8 +125,10 @@ DISTRO_FEATURES_append = " pulseaudio"
 IMAGE_INSTALL_append = " linux-firmware"
 
 # Add wifi/bluetooth components, uncomment the following line to use out of tree iwlwifi and disable the kernel wifi drivers
-DISTRO_FEATURES_append = " backport-iwlwifi"
-KERNEL_PROVIDERS_EXTRA_MODULES[5.4] += "${@bb.utils.contains("DISTRO_FEATURES","backport-iwlwifi", "backport-iwlwifi", "", d)}"
+# wifi drivers only supports 5.4 series at the moment, see ese-bsp/classes/kernel-wifi-conf.bbclass
+DISTRO_FEATURES_append = " backport-iwlwifi-5.4"
+KERNEL_PROVIDERS_EXTRA_MODULES[5.4] += "${@bb.utils.contains("DISTRO_FEATURES","backport-iwlwifi-5.4", "backport-iwlwifi", "", d)}"
+KERNEL_PROVIDERS_EXTRA_MODULES_WIFI_COMPAT += "${@bb.utils.contains("DISTRO_FEATURES","backport-iwlwifi-5.4", "5.4", "", d)}"
 
 # Bluetooth management
 IMAGE_INSTALL_append = " bluez5-noinst-tools bluez5-testtools"
@@ -260,6 +263,12 @@ VIRTUAL-RUNTIME_initscripts = ""
 KERNEL_PROVIDERS_EXTRA_MODULES[5.4] += "isgx"
 IMAGE_INSTALL_append = " sgx isgx-blacklist"
 RECOMMENDS_sgx_remove = "kernel-modules-isgx"
+
+# DPDK
+# -userspace is the non-module content
+# -modules has been obsoleted and merged into the main package to match
+# the module extension system (KERNEL_PROVIDERS_EXTRA_MODULES)
+KERNEL_PROVIDERS_EXTRA_MODULES[5.4] += "dpdk"
 
 ###################
 # OpenVINO PACKAGES
