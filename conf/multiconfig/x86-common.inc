@@ -50,10 +50,8 @@ PREFERRED_VERSION_gstreamer1.0-plugins-bad = "${PREFERRED_VERSION_gstreamer1.0}"
 PREFERRED_VERSION_gstreamer1.0-plugins-good = "${PREFERRED_VERSION_gstreamer1.0}"
 PREFERRED_VERSION_gstreamer1.0-vaapi = "${PREFERRED_VERSION_gstreamer1.0}"
 IMAGE_INSTALL_append = " gstreamer1.0-libav"
-PREFERRED_VERSION_intel-media-driver = "20.3%"
 PREFERRED_VERSION_gmmlib = "20%"
 PREFERRED_VERSION_gmmlib-native = "${PREFERRED_VERSION_gmmlib}"
-PREFERRED_VERSION_intel-mediasdk = "20.3%"
 DISTRO_FEATURES_append = " msdk"
 IMAGE_INSTALL_append = " intel-media-driver"
 IMAGE_INSTALL_append = "${@bb.utils.contains("DISTRO_FEATURES","msdk", " intel-mediasdk", "", d)}"
@@ -307,5 +305,5 @@ BAD_RECOMMENDATIONS_append = " clang-staticdev"
 # Adding recipes for platform specific changes
 IMAGE_INSTALL_append = " audio-hda-load"
 
-# usb mouse wakeup and SATA PM
-IMAGE_INSTALL_append = " udev-usbpower udev-satapower"
+# usb mouse wakeup and SATA PM and GBE and Serial PM
+IMAGE_INSTALL_append = " udev-usbpower udev-satapower udev-gbepower udev-serialpower"
