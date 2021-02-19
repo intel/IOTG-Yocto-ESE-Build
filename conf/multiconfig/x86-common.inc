@@ -44,18 +44,19 @@ DISTRO_FEATURES_NATIVE_append = " x11"
 DISTRO_FEATURES_NATIVESDK_append = " x11"
 
 # Set preferred version for media
-PREFERRED_VERSION_gstreamer1.0 = "1.19%"
+PREFERRED_VERSION_gstreamer1.0 = "1.17%"
 PREFERRED_VERSION_gstreamer1.0-plugins-base = "${PREFERRED_VERSION_gstreamer1.0}"
 PREFERRED_VERSION_gstreamer1.0-plugins-bad = "${PREFERRED_VERSION_gstreamer1.0}"
 PREFERRED_VERSION_gstreamer1.0-plugins-good = "${PREFERRED_VERSION_gstreamer1.0}"
 PREFERRED_VERSION_gstreamer1.0-vaapi = "${PREFERRED_VERSION_gstreamer1.0}"
 IMAGE_INSTALL_append = " gstreamer1.0-libav"
+PREFERRED_VERSION_intel-media-driver = "20.3%"
 PREFERRED_VERSION_gmmlib = "20%"
 PREFERRED_VERSION_gmmlib-native = "${PREFERRED_VERSION_gmmlib}"
+PREFERRED_VERSION_intel-mediasdk = "20.3%"
 DISTRO_FEATURES_append = " msdk"
 IMAGE_INSTALL_append = " intel-media-driver"
 IMAGE_INSTALL_append = "${@bb.utils.contains("DISTRO_FEATURES","msdk", " intel-mediasdk", "", d)}"
-IMAGE_INSTALL_append = "${@bb.utils.contains("DISTRO_FEATURES","msdk", " intel-mediasdk-samples", "", d)}"
 PACKAGECONFIG_append_pn-gstreamer1.0-libav = " libav"
 PACKAGECONFIG_append_pn-gstreamer1.0-plugins-base = "${@bb.utils.filter('DISTRO_FEATURES', 'opengl', d)}"
 IMAGE_INSTALL_append = " vulkan-loader"
@@ -110,7 +111,6 @@ IMAGE_INSTALL_append = " packagegroup-core-x11-extended"
 
 # Weston/Wayland
 IMAGE_INSTALL_append = " wayland weston"
-PACKAGECONFIG_append_pn-weston = " headless"
 
 # Contents from meta-tpm2 and configuration
 IMAGE_INSTALL_append = " packagegroup-ese-tpm2"
@@ -123,10 +123,8 @@ DISTRO_FEATURES_append = " pulseaudio"
 IMAGE_INSTALL_append = " linux-firmware"
 
 # Add wifi/bluetooth components, uncomment the following line to use out of tree iwlwifi and disable the kernel wifi drivers
-# wifi drivers only supports 5.4 series at the moment, see ese-bsp/classes/kernel-wifi-conf.bbclass
-DISTRO_FEATURES_append = " backport-iwlwifi-5.4"
-KERNEL_PROVIDERS_EXTRA_MODULES[5.4] += "${@bb.utils.contains("DISTRO_FEATURES","backport-iwlwifi-5.4", "backport-iwlwifi", "", d)}"
-KERNEL_PROVIDERS_EXTRA_MODULES_WIFI_COMPAT += "${@bb.utils.contains("DISTRO_FEATURES","backport-iwlwifi-5.4", "5.4", "", d)}"
+DISTRO_FEATURES_append = " backport-iwlwifi"
+KERNEL_PROVIDERS_EXTRA_MODULES_append = "${@bb.utils.contains("DISTRO_FEATURES","backport-iwlwifi", " backport-iwlwifi", "", d)}"
 
 # Bluetooth management
 IMAGE_INSTALL_append = " bluez5-noinst-tools bluez5-testtools"
@@ -162,6 +160,11 @@ IMAGE_INSTALL_append = " live555-examples"
 # Qemu virtualization support
 DISTRO_FEATURES_append = " virtualization"
 IMAGE_INSTALL_append = " qemu ovmf-edk2"
+
+# DPDK stack for TCCSDK 
+IMAGE_INSTALL_append = " ${PREFERRED_PROVIDER_virtual/kernel}-dpdk"
+KERNEL_PROVIDERS_EXTRA_MODULES_append = " dpdk-modules"
+
 
 # Using icewm instead of matchbox
 IMAGE_INSTALL_append = " icewm"
@@ -205,7 +208,6 @@ SECUREBOOT = "true"
 
 # Grub-efi provider
 EFI_PROVIDER = "grub-efi"
-# Shim will load this file
 SHIM_LOADER_IMAGE = "grubx64.efi"
 
 # efi boot manager
@@ -217,15 +219,20 @@ IMAGE_INSTALL_append = " efibootmgr"
 # uncomment to bundle Intel i915 firmware into the kernel
 #KERNEL_CLASSES_append = " kernel-i915-fw"
 # enable slimboot
-# bundle initrd for secure boot (kernel signing is now handled by ese-image-features post-processing)
-KERNEL_CLASSES_append = " kernel-sblimage-sha256 kernel-sblimage-sha384 kernel-initrd"
+# bundle initrd for secure boot
+KERNEL_CLASSES_append = " kernel-sign kernel-sblimage kernel-sblimage-sha256 kernel-sblimage-sha384 kernel-initrd"
 
 # default kernel (virtual provider set in multiconfig with internal overrides)
-IMAGE_INSTALL_append = " kernel-image kernel-modules"
+IMAGE_INSTALL_append = " kernel-image-signed kernel-modules"
 
 # convenience packge to pull in any other out-of-tree kernel drivers
 # See KERNEL_PROVIDERS_EXTRA_MODULES variable
 IMAGE_INSTALL_append = " packagegroup-kernel-oot"
+
+# Not actually needed, handled elsewhere through wic plugins
+MACHINE_ESSENTIAL_EXTRA_RDEPENDS_remove = "kernel-image"
+BAD_RECOMMENDATIONS_append = " grub-efi-bootimg virtual/grub-bootconf"
+RDEPENDS_grub-efi_remove_class-target = "virtual/grub-bootconf"
 
 # autoload modules
 KERNEL_MODULE_AUTOLOAD_append = " configfs uhid"
@@ -240,7 +247,7 @@ APPEND_append = " console=ttyS4,115200n8 console=ttyS5,115200n8 i915.force_probe
 IMAGE_INSTALL_append = " os-release"
 
 # IASImage settings for Slimboot
-IMAGE_INSTALL_append = " kernel-image-sblimage-sha256 kernel-image-sblimage-sha384"
+IMAGE_INSTALL_append = " kernel-image-sblimage kernel-image-sblimage-sha256 kernel-image-sblimage-sha384"
 
 ## Enable Smack support ##
 #OVERRIDES .= ":smack"
@@ -258,15 +265,9 @@ VIRTUAL-RUNTIME_initscripts = ""
 ## End of Smack support ##
 
 # SGX
-KERNEL_PROVIDERS_EXTRA_MODULES[5.4] += "isgx"
+KERNEL_PROVIDERS_EXTRA_MODULES_append = " isgx"
 IMAGE_INSTALL_append = " sgx isgx-blacklist"
 RECOMMENDS_sgx_remove = "kernel-modules-isgx"
-
-# DPDK
-# -userspace is the non-module content
-# -modules has been obsoleted and merged into the main package to match
-# the module extension system (KERNEL_PROVIDERS_EXTRA_MODULES)
-KERNEL_PROVIDERS_EXTRA_MODULES[5.4] += "dpdk"
 
 ###################
 # OpenVINO PACKAGES
@@ -305,5 +306,5 @@ BAD_RECOMMENDATIONS_append = " clang-staticdev"
 # Adding recipes for platform specific changes
 IMAGE_INSTALL_append = " audio-hda-load"
 
-# usb mouse wakeup and SATA PM and GBE and Serial PM
-IMAGE_INSTALL_append = " udev-usbpower udev-satapower udev-gbepower udev-serialpower"
+# usb mouse wakeup and SATA PM
+IMAGE_INSTALL_append = " udev-usbpower udev-satapower"
