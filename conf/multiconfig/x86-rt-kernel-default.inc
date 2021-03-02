@@ -9,3 +9,6 @@ WKS_EXTRA_KERNELS_append = " linux-intel-ese-lts-5.4-kernel"
 IMAGE_INSTALL_append = " linux-intel-ese-lts-5.4-kernel-image-signed linux-intel-ese-lts-5.4-kernel-image-sblimage linux-intel-ese-lts-5.4-kernel-image-sblimage-sha256 linux-intel-ese-lts-5.4-kernel-image-sblimage-sha384"
 IMAGE_INSTALL_append_pn-core-image-sato-sdk = " linux-intel-ese-lts-5.4-kernel-dev"
 KERNEL_PROVIDERS_append = " linux-intel-ese-lts-5.4"
+
+# want XDP patch
+DISTRO_FEATURES_append = " libc-abi-breaker-xdp"
