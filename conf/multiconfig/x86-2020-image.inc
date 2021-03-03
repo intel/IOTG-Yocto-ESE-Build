@@ -1,4 +1,4 @@
-require ./x86-common.inc
+require ./x86-2020-common.inc
 # default kernel
 ##### IMPORTANT: WHEN MODIFYING THIS FILE, tmp-glic/cache may get outdated, delete it before running bitbake again
 # you may also need to run cleansstate on any images you built earlier
