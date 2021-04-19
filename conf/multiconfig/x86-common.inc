@@ -257,12 +257,6 @@ VIRTUAL-RUNTIME_initscripts = ""
 
 ## End of Smack support ##
 
-# SGX
-KERNEL_PROVIDERS_EXTRA_MODULES[5.4] += "isgx"
-IMAGE_INSTALL_append = " sgx isgx-blacklist"
-RECOMMENDS_sgx_remove = "kernel-modules-isgx"
-IMAGE_INSTALL_remove = "${@bb.utils.contains("LAYERSERIES_COMPAT_core","gatesgarth", "sgx", "", d)}"
-
 # DPDK
 # -userspace is the non-module content
 # -modules has been obsoleted and merged into the main package to match

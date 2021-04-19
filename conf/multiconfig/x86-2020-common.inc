@@ -128,6 +128,11 @@ IMAGE_INSTALL_append = " linux-firmware"
 #KERNEL_PROVIDERS_EXTRA_MODULES[5.4] += "${@bb.utils.contains("DISTRO_FEATURES","backport-iwlwifi-5.4", "backport-iwlwifi", "", d)}"
 #KERNEL_PROVIDERS_EXTRA_MODULES_WIFI_COMPAT += "${@bb.utils.contains("DISTRO_FEATURES","backport-iwlwifi-5.4", "5.4", "", d)}"
 
+# Add wifi/bluetooth components to to use out of tree iwlwifi and disable the kernel wifi drivers for kernel 5.10
+DISTRO_FEATURES_append = " backport-iwlwifi-5.10"
+KERNEL_PROVIDERS_EXTRA_MODULES[5.10] += "${@bb.utils.contains("DISTRO_FEATURES","backport-iwlwifi-5.10", "backport-iwlwifi", "", d)}"
+KERNEL_PROVIDERS_EXTRA_MODULES_WIFI_COMPAT += "${@bb.utils.contains("DISTRO_FEATURES","backport-iwlwifi-5.10", "5.10", "", d)}"
+
 # Bluetooth management
 IMAGE_INSTALL_append = " bluez5-noinst-tools bluez5-testtools"
 
@@ -258,9 +263,11 @@ VIRTUAL-RUNTIME_initscripts = ""
 ## End of Smack support ##
 
 # SGX
-KERNEL_PROVIDERS_EXTRA_MODULES_append = " isgx"
+KERNEL_PROVIDERS_EXTRA_MODULES[5.10] += "${@bb.utils.contains("LAYERSERIES_COMPAT_core","dunfell", "isgx", "", d)}"
 IMAGE_INSTALL_append = " sgx isgx-blacklist"
-IMAGE_INSTALL_remove = "${@bb.utils.contains("LAYERSERIES_COMPAT_core","gatesgarth", "sgx", "", d)}"
+RECOMMENDS_sgx_remove = "kernel-modules-isgx"
+IMAGE_INSTALL_remove = " ${@bb.utils.contains("LAYERSERIES_COMPAT_core","gatesgarth", "sgx", "", d)}"
+IMAGE_INSTALL_remove = " ${@bb.utils.contains("LAYERSERIES_COMPAT_core","gatesgarth", "isgx-blacklist", "", d)}"
 
 # DPDK
 # -userspace is the non-module content
