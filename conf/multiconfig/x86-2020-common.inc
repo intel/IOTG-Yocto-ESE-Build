@@ -50,7 +50,7 @@ PREFERRED_VERSION_gstreamer1.0-plugins-bad = "${PREFERRED_VERSION_gstreamer1.0}"
 PREFERRED_VERSION_gstreamer1.0-plugins-good = "${PREFERRED_VERSION_gstreamer1.0}"
 PREFERRED_VERSION_gstreamer1.0-vaapi = "${PREFERRED_VERSION_gstreamer1.0}"
 IMAGE_INSTALL_append = " gstreamer1.0-libav"
-PREFERRED_VERSION_gmmlib = "20%"
+PREFERRED_VERSION_gmmlib = "21%"
 PREFERRED_VERSION_gmmlib-native = "${PREFERRED_VERSION_gmmlib}"
 DISTRO_FEATURES_append = " msdk"
 IMAGE_INSTALL_append = " intel-media-driver"
@@ -263,9 +263,11 @@ VIRTUAL-RUNTIME_initscripts = ""
 ## End of Smack support ##
 
 # SGX
-KERNEL_PROVIDERS_EXTRA_MODULES_append = " isgx"
+KERNEL_PROVIDERS_EXTRA_MODULES[5.10] += "${@bb.utils.contains("LAYERSERIES_COMPAT_core","dunfell", "isgx", "", d)}"
 IMAGE_INSTALL_append = " sgx isgx-blacklist"
-IMAGE_INSTALL_remove = "${@bb.utils.contains("LAYERSERIES_COMPAT_core","gatesgarth", "sgx", "", d)}"
+RECOMMENDS_sgx_remove = "kernel-modules-isgx"
+IMAGE_INSTALL_remove = " ${@bb.utils.contains("LAYERSERIES_COMPAT_core","gatesgarth", "sgx", "", d)}"
+IMAGE_INSTALL_remove = " ${@bb.utils.contains("LAYERSERIES_COMPAT_core","gatesgarth", "isgx-blacklist", "", d)}"
 
 # DPDK
 # -userspace is the non-module content
