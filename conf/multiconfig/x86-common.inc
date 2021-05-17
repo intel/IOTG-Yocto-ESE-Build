@@ -122,11 +122,6 @@ DISTRO_FEATURES_append = " pulseaudio"
 # linux-firmware
 IMAGE_INSTALL_append = " linux-firmware"
 
-# Add wifi/bluetooth components, uncomment the following line to use out of tree iwlwifi and disable the kernel wifi drivers
-# wifi drivers only supports 5.4 series at the moment, see ese-bsp/classes/kernel-wifi-conf.bbclass
-DISTRO_FEATURES_append = " backport-iwlwifi-5.4"
-KERNEL_PROVIDERS_EXTRA_MODULES[5.4] += "${@bb.utils.contains("DISTRO_FEATURES","backport-iwlwifi-5.4", "backport-iwlwifi", "", d)}"
-KERNEL_PROVIDERS_EXTRA_MODULES_WIFI_COMPAT += "${@bb.utils.contains("DISTRO_FEATURES","backport-iwlwifi-5.4", "5.4", "", d)}"
 
 # Bluetooth management
 IMAGE_INSTALL_append = " bluez5-noinst-tools bluez5-testtools"
@@ -234,7 +229,7 @@ KERNEL_MODULE_AUTOLOAD_append = " configfs uhid"
 IMAGE_INSTALL_append = " fbu"
 
 # Additional serial consoles
-APPEND_append = " console=ttyS4,115200n8 console=ttyS5,115200n8 i915.force_probe=* i915.enable_guc=2" 
+APPEND_append = " console=ttyS4,115200n8 console=ttyS5,115200n8 i915.force_probe=*" 
 
 # OS-release info
 IMAGE_INSTALL_append = " os-release"
@@ -257,11 +252,6 @@ VIRTUAL-RUNTIME_initscripts = ""
 
 ## End of Smack support ##
 
-# DPDK
-# -userspace is the non-module content
-# -modules has been obsoleted and merged into the main package to match
-# the module extension system (KERNEL_PROVIDERS_EXTRA_MODULES)
-KERNEL_PROVIDERS_EXTRA_MODULES[5.4] += "dpdk"
 
 ###################
 # OpenVINO PACKAGES
