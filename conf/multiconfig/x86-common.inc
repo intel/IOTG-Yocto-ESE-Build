@@ -43,19 +43,14 @@ CORE_IMAGE_EXTRA_INSTALL += "wayland weston"
 DISTRO_FEATURES_NATIVE_append = " x11"
 DISTRO_FEATURES_NATIVESDK_append = " x11"
 
-# Set preferred version for media
-PREFERRED_VERSION_gstreamer1.0 = "1.19%"
-PREFERRED_VERSION_gstreamer1.0-plugins-base = "${PREFERRED_VERSION_gstreamer1.0}"
-PREFERRED_VERSION_gstreamer1.0-plugins-bad = "${PREFERRED_VERSION_gstreamer1.0}"
-PREFERRED_VERSION_gstreamer1.0-plugins-good = "${PREFERRED_VERSION_gstreamer1.0}"
-PREFERRED_VERSION_gstreamer1.0-vaapi = "${PREFERRED_VERSION_gstreamer1.0}"
+# Set features for media
 IMAGE_INSTALL_append = " gstreamer1.0-libav"
-PREFERRED_VERSION_gmmlib = "21%"
-PREFERRED_VERSION_gmmlib-native = "${PREFERRED_VERSION_gmmlib}"
-DISTRO_FEATURES_append = " msdk"
+DISTRO_FEATURES_append = " msdk onevpl"
 IMAGE_INSTALL_append = " intel-media-driver"
 IMAGE_INSTALL_append = "${@bb.utils.contains("DISTRO_FEATURES","msdk", " intel-mediasdk", "", d)}"
 IMAGE_INSTALL_append = "${@bb.utils.contains("DISTRO_FEATURES","msdk", " intel-mediasdk-samples", "", d)}"
+IMAGE_INSTALL_append = "${@bb.utils.contains("DISTRO_FEATURES","onevpl", " onevpl", "", d)}"
+IMAGE_INSTALL_append = "${@bb.utils.contains("DISTRO_FEATURES","onevpl-intel-gpu", " onevpl-intel-gpu", "", d)}"
 PACKAGECONFIG_append_pn-gstreamer1.0-libav = " libav"
 PACKAGECONFIG_append_pn-gstreamer1.0-plugins-base = "${@bb.utils.filter('DISTRO_FEATURES', 'opengl', d)}"
 IMAGE_INSTALL_append = " vulkan-loader"
@@ -157,6 +152,7 @@ IMAGE_INSTALL_append = " live555-examples"
 # Qemu virtualization support
 DISTRO_FEATURES_append = " virtualization"
 IMAGE_INSTALL_append = " qemu ovmf-edk2"
+PACKAGECONFIG_append_pn-qemu = " libusb glx gtk+"
 
 # Using icewm instead of matchbox
 IMAGE_INSTALL_append = " icewm"
@@ -213,10 +209,15 @@ IMAGE_INSTALL_append = " efibootmgr"
 #KERNEL_CLASSES_append = " kernel-i915-fw"
 # enable slimboot
 # bundle initrd for secure boot (kernel signing is now handled by ese-image-features post-processing)
-KERNEL_CLASSES_append = " kernel-sblimage-sha256 kernel-sblimage-sha384 kernel-initrd"
+# slimboot IMAGE_FEATURES to install slimboot kernel subpackages
+KERNEL_CLASSES_append = " kernel-initrd"
+IMAGE_FEATURES_append = " slimboot"
 
 # default kernel (virtual provider set in multiconfig with internal overrides)
 IMAGE_INSTALL_append = " kernel-image kernel-modules"
+
+#Add usb_modeswitch support
+IMAGE_INSTALL_append = " usb-modeswitch"
 
 # convenience packge to pull in any other out-of-tree kernel drivers
 # See KERNEL_PROVIDERS_EXTRA_MODULES variable
@@ -235,7 +236,7 @@ APPEND_append = " console=ttyS4,115200n8 console=ttyS5,115200n8 i915.force_probe
 IMAGE_INSTALL_append = " os-release"
 
 # IASImage settings for Slimboot
-IMAGE_INSTALL_append = " kernel-image-sblimage-sha256 kernel-image-sblimage-sha384"
+IMAGE_INSTALL_append = " kernel-image-sblimage"
 
 ## Enable Smack support ##
 #OVERRIDES .= ":smack"
@@ -284,6 +285,12 @@ IMAGE_INSTALL_append = " openvino-model-optimizer"
 # python3 packages needed by the inference engine python test script to transform the input image to expected format
 IMAGE_INSTALL_append = " python3-opencv python3-numpy"
 
+# Set preferred version for TBB
+PREFERRED_VERSION_tbb = "2021.2%"
+
+# Include optimized deep learning models and a set of demos
+IMAGE_INSTALL_append = " open-model-zoo"
+
 ########## clang/llvm size problems
 BAD_RECOMMENDATIONS_append = " clang-staticdev"
 
@@ -292,3 +299,9 @@ IMAGE_INSTALL_append = " audio-hda-load"
 
 # usb mouse wakeup and SATA PM and GBE and Serial PM
 IMAGE_INSTALL_append = " udev-usbpower udev-satapower udev-gbepower udev-serialpower"
+
+# tccsdk dependencies
+IMAGE_INSTALL_append = "${@bb.utils.contains("IMAGE_FEATURES", "dev-pkgs", " itt-staticdev", "", d)}"
+
+# Enable tpm2-abrmd service
+SYSTEMD_AUTO_ENABLE_pn-tpm2-abrmd = "enable"

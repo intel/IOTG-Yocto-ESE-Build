@@ -22,18 +22,25 @@ SECURE_BOOT_CERT_GEN_SUBJECT = "/CN=BSP Signing Key/"
 #PREGENERATED_SIGNING_KEY_SHIM_CRT = "shim.crt"
 ### End Pregenerated Keys
 
-# where to symlink "sbl_os" to by default, may be sbl_os_3k
-DEFAULT_secure-boot-certificates-slimboot = "sbl_os_2k"
+### slimboot settings
+# SBLIMAGE_AUTH: auth type, used to generate container, "" allows the GenContainer script to determine the appropriate value.
+#                Other possibilities are RSA2048_PSS_SHA2_256 and RSA3072_PSS_SHA2_384
+# SBLIMAGE_BOOT_DEFAULT_CONTAINER - container name used by loader firmware
+# SBLIMAGE_BOOT_SUPPORTS_SOFTLINK - whether to use symlinks or not to save space, the older loader firmware does not support symlinks
+SBLIMAGE_AUTH = ""
+SBLIMAGE_CERT_GEN_ALGO = "rsa"
+SBLIMAGE_BOOT_CERT_GEN_LENGTH = "3072"
+SBLIMAGE_BOOT_CERT_GEN_HASH = "sha384"
+SBLIMAGE_BOOT_DEFAULT_CONTAINER = "sbl_os"
+SBLIMAGE_BOOT_SUPPORTS_SOFTLINK = "1"
 
-### Auto enerated secure boot Certs/Keys for Slimboot
-# sbl_os_2k keys
-PREFERRED_PROVIDER_virtual/secure-boot-certificates-slimboot-2048 = "secure-boot-certificates-slimboot-2048"
-# sbl_os_3k keys
-PREFERRED_PROVIDER_virtual/secure-boot-certificates-slimboot-3072 = "secure-boot-certificates-slimboot-3072"
+SBLIMAGE_BOOT_CERT_GEN_SUBJECT = "/CN=BSP Signing Key/"
+PREFERRED_PROVIDER_virtual/secure-boot-certificates-slimboot = "secure-boot-certificates-slimboot"
 
 ### Pregenerated secure boot Certs/Keys for Slimboot
 # Uncomment these lines to use pregenerated keys
-#PREFERRED_PROVIDER_virtual/secure-boot-certificates-slimboot-2048 = "secure-boot-certificates-slimboot-2048-pregenerated"
-#PREFERRED_PROVIDER_virtual/secure-boot-certificates-slimboot-3072 = "secure-boot-certificates-slimboot-3072-pregenerated"
-#PREGENERATED_SIGNING_KEY_SLIMBOOT_KEY_SHA256 = "${TOPDIR}/cert/TestSigningPrivateKey.pem"
-#PREGENERATED_SIGNING_KEY_SLIMBOOT_KEY_SHA384 = "${TOPDIR}/cert/TestSigningPrivateKey_RSA3072.pem"
+#PREFERRED_PROVIDER_virtual/secure-boot-certificates-slimboot = "secure-boot-certificates-slimboot-pregenerated"
+#PREGENERATED_SIGNING_KEY_SLIMBOOT_KEY = "${TOPDIR}/cert/TestSigningPrivateKey.pem"
+
+# internal stubs
+include ${TOPDIR}/conf/internal/signing.inc
